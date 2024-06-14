@@ -1,13 +1,17 @@
 import 'package:chat_app/components/my_button.dart';
 import 'package:chat_app/components/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController __confirmpasswordController =
       TextEditingController();
-  RegisterPage({super.key});
+
+  final void Function()? onTap;
+
+  RegisterPage({super.key, required this.onTap});
 
   void register() {}
 
@@ -77,12 +81,15 @@ class RegisterPage extends StatelessWidget {
                       fontSize: 16,
                       color: Theme.of(context).colorScheme.primary),
                 ),
-                Text(
-                  'Login now',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary),
+                GestureDetector(
+                  onTap: onTap,
+                  child: Text(
+                    'Login now',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
                 ),
               ],
             ),
