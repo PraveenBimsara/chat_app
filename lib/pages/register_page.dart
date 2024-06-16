@@ -80,18 +80,21 @@ class _RegisterPageState extends State<RegisterPage> {
               hintText: 'Email',
               obscurText: false,
               controller: _emailController,
+              focusNode: null,
             ),
             const SizedBox(height: 10),
             MyTextField(
               hintText: 'Password',
               obscurText: true,
               controller: _passwordController,
+              focusNode: null,
             ),
             const SizedBox(height: 10),
             MyTextField(
               hintText: 'Confirm Password',
               obscurText: true,
               controller: _confirmPasswordController,
+              focusNode: null,
             ),
             const SizedBox(height: 25),
             MyButton(

@@ -27,6 +27,37 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+
+    //add listener to focus node
+    myFocusNode.addListener(() {
+      if (myFocusNode.hasFocus) {
+        Future.delayed(
+          const Duration(milliseconds: 500),
+          () => scrollDown(),
+        );
+      }
+    });
+
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => scrollDown(),
+    );
+  }
+
+  @override
+  void dispose() {
+    myFocusNode.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  final ScrollController _scrollController = ScrollController();
+  void scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   // Send message
@@ -40,6 +71,7 @@ class _ChatPageState extends State<ChatPage> {
       // Clear text controller
       _messageController.clear();
     }
+    scrollDown();
   }
 
   @override
@@ -85,6 +117,7 @@ class _ChatPageState extends State<ChatPage> {
         }
         // Return list view
         return ListView(
+          controller: _scrollController,
           children: snapshot.data!.docs
               .map((doc) => _buildMessageItem(doc, senderID, context))
               .toList(),
@@ -142,6 +175,7 @@ class _ChatPageState extends State<ChatPage> {
               hintText: 'Type a message',
               obscurText: false,
               controller: _messageController,
+              focusNode: myFocusNode,
             ),
           ),
           // Send button
