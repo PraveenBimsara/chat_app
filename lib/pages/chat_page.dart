@@ -9,21 +9,21 @@ class ChatPage extends StatelessWidget {
   final String receiverID;
   ChatPage({super.key, required this.receiverEmail, required this.receiverID});
 
-  //text controller
+  // Text controller
   final TextEditingController _messageController = TextEditingController();
 
-  //chat & auth service
+  // Chat & auth service
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
-  //send message
+  // Send message
   void sendMessage() async {
-    //if there is something inside the textfield
+    // If there is something inside the textfield
     if (_messageController.text.isNotEmpty) {
-      //send message
+      // Send message
       await _chatService.sendMessage(receiverID, _messageController.text);
 
-      //clear text controller
+      // Clear text controller
       _messageController.clear();
     }
   }
@@ -36,49 +36,52 @@ class ChatPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          //display all messages
+          // Display all messages
           Expanded(
             child: _buildMessageList(),
           ),
 
-          //user input
+          // User input
           _buildUserInput(),
         ],
       ),
     );
   }
 
-  //build message list
+  // Build message list
   Widget _buildMessageList() {
     String senderID = _authService.getCurrentUser()!.uid;
     return StreamBuilder(
-        stream: _chatService.getMessages(receiverID, senderID),
-        builder: (context, snapshot) {
-          //errors
-          if (snapshot.hasError) {
-            return const Text('Error');
-          }
-          //loading
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text('Loading..');
-          }
-          //return list view
-          return ListView(
-            children: snapshot.data!.docs
-                .map((doc) => _buildMessageItem(doc))
-                .toList(),
-          );
-        });
+      stream: _chatService.getMessages(senderID, receiverID),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        // Errors
+        if (snapshot.hasError) {
+          return const Text('Error');
+        }
+        // Loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        // Return list view
+        return ListView(
+          children:
+              snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
+        );
+      },
+    );
   }
 
-  //build message item
+  // Build message item
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Text(data['message']);
+    return ListTile(
+      title: Text(data['message']),
+      subtitle: Text(data['senderEmail']),
+    );
   }
 
-  //build message input
+  // Build user input
   Widget _buildUserInput() {
     return Row(
       children: [
@@ -89,7 +92,7 @@ class ChatPage extends StatelessWidget {
             controller: _messageController,
           ),
         ),
-        //send button
+        // Send button
         IconButton(onPressed: sendMessage, icon: const Icon(Icons.arrow_upward))
       ],
     );
